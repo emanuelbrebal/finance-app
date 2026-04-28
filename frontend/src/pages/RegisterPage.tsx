@@ -4,18 +4,20 @@ import { Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useLogin, useMe } from '@/hooks/useAuth'
-import { LoginSchema } from '@/lib/validators/auth'
+import { useMe, useRegister } from '@/hooks/useAuth'
+import { RegisterSchema } from '@/lib/validators/auth'
 import { useThemeContext } from '@/contexts/ThemeContext'
 
-export function LoginPage() {
+export function RegisterPage() {
   const navigate = useNavigate()
   const { data: user, isLoading } = useMe()
   const { theme, toggle } = useThemeContext()
-  const loginMutation = useLogin()
+  const registerMutation = useRegister()
 
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordConfirmation, setPasswordConfirmation] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
@@ -26,13 +28,19 @@ export function LoginPage() {
     e.preventDefault()
     setErrors({})
 
-    const parsed = LoginSchema.safeParse({ email, password })
+    const parsed = RegisterSchema.safeParse({
+      name,
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    })
+
     if (!parsed.success) {
       setErrors(flattenZodErrors(parsed.error.issues))
       return
     }
 
-    loginMutation.mutate(parsed.data, {
+    registerMutation.mutate(parsed.data, {
       onSuccess: () => navigate('/dashboard', { replace: true }),
       onError: (err) => setErrors(extractServerErrors(err)),
     })
@@ -62,8 +70,20 @@ export function LoginPage() {
 
         <form onSubmit={submit} className="space-y-4 rounded-lg border border-border p-6">
           <div className="space-y-1">
-            <h2 className="text-base font-semibold">entrar</h2>
-            <p className="text-xs text-muted-foreground">use suas credenciais</p>
+            <h2 className="text-base font-semibold">criar conta</h2>
+            <p className="text-xs text-muted-foreground">comece a juntar capital</p>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="name">nome</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="name"
+              placeholder="Seu nome"
+            />
+            {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
           </div>
 
           <div className="space-y-1">
@@ -86,22 +106,38 @@ export function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              autoComplete="new-password"
+              placeholder="mínimo 8 caracteres"
             />
             {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
           </div>
 
+          <div className="space-y-1">
+            <Label htmlFor="password_confirmation">confirmar senha</Label>
+            <Input
+              id="password_confirmation"
+              type="password"
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              autoComplete="new-password"
+              placeholder="repita a senha"
+            />
+            {errors.password_confirmation && (
+              <p className="text-xs text-destructive">{errors.password_confirmation}</p>
+            )}
+          </div>
+
           {errors._root && <p className="text-xs text-destructive">{errors._root}</p>}
 
-          <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-            {loginMutation.isPending ? 'entrando...' : 'entrar'}
+          <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+            {registerMutation.isPending ? 'criando conta...' : 'criar conta'}
           </Button>
 
           <Link
-            to="/register"
+            to="/login"
             className="block text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            ainda não tenho conta — criar conta
+            já tenho conta — entrar
           </Link>
         </form>
       </div>
