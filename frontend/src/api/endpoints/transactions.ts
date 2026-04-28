@@ -92,6 +92,24 @@ export async function deleteTransaction(id: number): Promise<void> {
   await apiClient.delete(`/transactions/${id}`)
 }
 
+export interface MonthlySummaryRow {
+  month: string      // "YYYY-MM"
+  direction: 'in' | 'out'
+  total: string
+  count: number
+}
+
+interface MonthlySummaryResponse {
+  data: MonthlySummaryRow[]
+}
+
+export async function getMonthlySummary(from: string, to: string): Promise<MonthlySummaryRow[]> {
+  const { data } = await apiClient.get<MonthlySummaryResponse>('/transactions/summary', {
+    params: { group_by: 'month', from, to },
+  })
+  return data.data
+}
+
 export async function bulkCategorize(
   ids: number[],
   categoryId: number,

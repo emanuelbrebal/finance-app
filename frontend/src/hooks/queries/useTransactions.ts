@@ -3,6 +3,7 @@ import {
   bulkCategorize,
   createTransaction,
   deleteTransaction,
+  getMonthlySummary,
   listTransactions,
   updateTransaction,
   type CreateTransactionPayload,
@@ -41,6 +42,21 @@ export function useDeleteTransaction() {
   return useMutation({
     mutationFn: (id: number) => deleteTransaction(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: TRANSACTIONS_KEY }),
+  })
+}
+
+/** Returns income/expense data for the last `months` complete months + current. */
+export function useMonthlyStats(months = 6) {
+  const now = new Date()
+  const toDate = new Date(now.getFullYear(), now.getMonth() + 1, 0) // last day of current month
+  const fromDate = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1)
+  const from = fromDate.toISOString().slice(0, 10)
+  const to = toDate.toISOString().slice(0, 10)
+
+  return useQuery({
+    queryKey: [...TRANSACTIONS_KEY, 'monthly-stats', from, to],
+    queryFn: () => getMonthlySummary(from, to),
+    staleTime: 60_000,
   })
 }
 
