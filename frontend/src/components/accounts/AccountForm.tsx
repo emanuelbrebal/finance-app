@@ -2,73 +2,87 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useCreateAccount } from '@/hooks/queries/useAccounts'
+import { useCreateAccount, useUpdateAccount } from '@/hooks/queries/useAccounts'
 import {
   ACCOUNT_TYPES,
   ACCOUNT_TYPE_LABELS,
   CreateAccountSchema,
+  UpdateAccountSchema,
   type AccountType,
 } from '@/lib/validators/account'
+import type { Account } from '@/api/endpoints/accounts'
 
 interface AccountFormProps {
+  /** When provided, the form runs in edit mode for this account */
+  account?: Account
   onSuccess?: () => void
   onCancel?: () => void
 }
 
-export function AccountForm({ onSuccess, onCancel }: AccountFormProps) {
-  const [name, setName] = useState('')
-  const [type, setType] = useState<AccountType>('checking')
-  const [initialBalance, setInitialBalance] = useState('')
-  const [color, setColor] = useState('')
+export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) {
+  const isEdit = account !== undefined
+
+  const [name, setName] = useState(account?.name ?? '')
+  const [type, setType] = useState<AccountType>(account?.type ?? 'checking')
+  const [initialBalance, setInitialBalance] = useState(account?.initial_balance ?? '')
+  const [color, setColor] = useState(account?.color ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const createMutation = useCreateAccount()
+  const updateMutation = useUpdateAccount(account?.id ?? 0)
+
+  const isPending = isEdit ? updateMutation.isPending : createMutation.isPending
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
     setErrors({})
 
-    const parsed = CreateAccountSchema.safeParse({
-      name,
-      type,
-      initial_balance: initialBalance,
-      color,
-    })
+    const raw = { name, type, initial_balance: initialBalance, color }
 
-    if (!parsed.success) {
-      setErrors(flattenZodErrors(parsed.error.issues))
-      return
+    if (isEdit) {
+      const parsed = UpdateAccountSchema.safeParse(raw)
+      if (!parsed.success) {
+        setErrors(flattenZodErrors(parsed.error.issues))
+        return
+      }
+      updateMutation.mutate(parsed.data, {
+        onSuccess: () => onSuccess?.(),
+        onError: (err) => setErrors(extractServerErrors(err)),
+      })
+    } else {
+      const parsed = CreateAccountSchema.safeParse(raw)
+      if (!parsed.success) {
+        setErrors(flattenZodErrors(parsed.error.issues))
+        return
+      }
+      const payload = {
+        name: parsed.data.name,
+        type: parsed.data.type,
+        ...(parsed.data.initial_balance ? { initial_balance: parsed.data.initial_balance } : {}),
+        ...(parsed.data.color ? { color: parsed.data.color } : {}),
+      }
+      createMutation.mutate(payload, {
+        onSuccess: () => {
+          setName('')
+          setInitialBalance('')
+          setColor('')
+          onSuccess?.()
+        },
+        onError: (err) => setErrors(extractServerErrors(err)),
+      })
     }
-
-    const payload = {
-      name: parsed.data.name,
-      type: parsed.data.type,
-      ...(parsed.data.initial_balance ? { initial_balance: parsed.data.initial_balance } : {}),
-      ...(parsed.data.color ? { color: parsed.data.color } : {}),
-    }
-
-    createMutation.mutate(payload, {
-      onSuccess: () => {
-        setName('')
-        setInitialBalance('')
-        setColor('')
-        onSuccess?.()
-      },
-      onError: (err) => setErrors(extractServerErrors(err)),
-    })
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4 rounded-lg border border-border p-6">
-      <div className="space-y-1">
-        <h3 className="text-base font-semibold">nova conta</h3>
-        <p className="text-xs text-muted-foreground">cadastre uma conta para acompanhar movimentações</p>
-      </div>
+    <form onSubmit={submit} className="space-y-4 rounded-lg border border-border p-5">
+      <h3 className="text-sm font-semibold">
+        {isEdit ? 'editar conta' : 'nova conta'}
+      </h3>
 
       <div className="space-y-1">
-        <Label htmlFor="name">nome</Label>
+        <Label htmlFor="acc-name">nome</Label>
         <Input
-          id="name"
+          id="acc-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nubank, Carteira, ..."
@@ -77,55 +91,62 @@ export function AccountForm({ onSuccess, onCancel }: AccountFormProps) {
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="type">tipo</Label>
+        <Label htmlFor="acc-type">tipo</Label>
         <select
-          id="type"
+          id="acc-type"
           value={type}
           onChange={(e) => setType(e.target.value as AccountType)}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           {ACCOUNT_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {ACCOUNT_TYPE_LABELS[t]}
-            </option>
+            <option key={t} value={t}>{ACCOUNT_TYPE_LABELS[t]}</option>
           ))}
         </select>
         {errors.type && <p className="text-xs text-destructive">{errors.type}</p>}
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="initial_balance">saldo inicial</Label>
+        <Label htmlFor="acc-balance">saldo inicial</Label>
         <Input
-          id="initial_balance"
+          id="acc-balance"
           inputMode="decimal"
           value={initialBalance}
           onChange={(e) => setInitialBalance(e.target.value.replace(',', '.'))}
           placeholder="0.00"
         />
-        {errors.initial_balance && <p className="text-xs text-destructive">{errors.initial_balance}</p>}
+        {errors.initial_balance && (
+          <p className="text-xs text-destructive">{errors.initial_balance}</p>
+        )}
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="color">cor (opcional)</Label>
-        <Input
-          id="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          placeholder="#820AD1"
-        />
+        <Label htmlFor="acc-color">cor (opcional)</Label>
+        <div className="flex items-center gap-2">
+          <Input
+            id="acc-color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            placeholder="#820AD1"
+            className="flex-1"
+          />
+          {color && /^#[0-9A-Fa-f]{6}$/.test(color) && (
+            <span
+              className="h-8 w-8 shrink-0 rounded border border-border"
+              style={{ backgroundColor: color }}
+            />
+          )}
+        </div>
         {errors.color && <p className="text-xs text-destructive">{errors.color}</p>}
       </div>
 
       {errors._root && <p className="text-xs text-destructive">{errors._root}</p>}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={createMutation.isPending} className="flex-1">
-          {createMutation.isPending ? 'salvando...' : 'criar conta'}
+        <Button type="submit" disabled={isPending} className="flex-1">
+          {isPending ? 'salvando...' : isEdit ? 'salvar alterações' : 'criar conta'}
         </Button>
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            cancelar
-          </Button>
+          <Button type="button" variant="outline" onClick={onCancel}>cancelar</Button>
         )}
       </div>
     </form>
@@ -142,21 +163,14 @@ function flattenZodErrors(issues: { path: PropertyKey[]; message: string }[]): R
 
 function extractServerErrors(err: unknown): Record<string, string> {
   if (
-    typeof err === 'object' &&
-    err !== null &&
-    'response' in err &&
+    typeof err === 'object' && err !== null && 'response' in err &&
     typeof (err as { response?: { data?: unknown } }).response?.data === 'object'
   ) {
-    const data = (err as { response: { data: { message?: string; errors?: Record<string, string[]> } } })
-      .response.data
+    const data = (err as { response: { data: { message?: string; errors?: Record<string, string[]> } } }).response.data
     if (data.errors) {
-      return Object.fromEntries(
-        Object.entries(data.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : String(v)]),
-      )
+      return Object.fromEntries(Object.entries(data.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : String(v)]))
     }
-    if (data.message) {
-      return { _root: data.message }
-    }
+    if (data.message) return { _root: data.message }
   }
   return { _root: 'erro inesperado' }
 }

@@ -1,9 +1,14 @@
+import { useState } from 'react'
+import { Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { CategoryForm } from './CategoryForm'
 import { useArchiveCategory, useCategories } from '@/hooks/queries/useCategories'
 import { CATEGORY_KIND_LABELS } from '@/lib/validators/category'
 import type { Category } from '@/api/endpoints/categories'
 
 export function CategoryList() {
+  const [editingId, setEditingId] = useState<number | null>(null)
+
   const { data: categories, isLoading, isError } = useCategories()
   const archiveMutation = useArchiveCategory()
 
@@ -38,38 +43,65 @@ export function CategoryList() {
               {CATEGORY_KIND_LABELS[kind]} ({grouped[kind].length})
             </h4>
             <ul className="space-y-1">
-              {grouped[kind].map((category) => (
-                <li
-                  key={category.id}
-                  className="flex items-center justify-between rounded-md border border-border px-3 py-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="inline-block h-3 w-3 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                      aria-hidden
-                    />
-                    <span className="text-sm">{category.name}</span>
-                    {!category.is_essential && category.kind === 'expense' && (
-                      <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-600 dark:text-amber-400">
-                        supérfluo
-                      </span>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={archiveMutation.isPending}
-                    onClick={() => {
-                      if (confirm(`arquivar "${category.name}"?`)) {
-                        archiveMutation.mutate(category.id)
-                      }
-                    }}
+              {grouped[kind].map((category) => {
+                if (category.id === editingId) {
+                  return (
+                    <li key={category.id}>
+                      <CategoryForm
+                        category={category}
+                        onSuccess={() => setEditingId(null)}
+                        onCancel={() => setEditingId(null)}
+                      />
+                    </li>
+                  )
+                }
+
+                return (
+                  <li
+                    key={category.id}
+                    className="group flex items-center justify-between rounded-md border border-border px-3 py-2 transition-colors hover:bg-accent/30"
                   >
-                    arquivar
-                  </Button>
-                </li>
-              ))}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="inline-block h-3 w-3 rounded-full shrink-0"
+                        style={{ backgroundColor: category.color }}
+                        aria-hidden
+                      />
+                      <span className="text-sm">{category.name}</span>
+                      {!category.is_essential && category.kind === 'expense' && (
+                        <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                          supérfluo
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingId(category.id)}
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                        aria-label="editar"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={archiveMutation.isPending}
+                        onClick={() => {
+                          if (confirm(`arquivar "${category.name}"?`)) {
+                            archiveMutation.mutate(category.id)
+                          }
+                        }}
+                        className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+                      >
+                        arquivar
+                      </Button>
+                    </div>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         ) : null,
