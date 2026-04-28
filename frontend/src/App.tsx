@@ -5,6 +5,9 @@ import { LoginSchema, RegisterSchema } from '@/lib/validators/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { AccountsPage } from '@/pages/AccountsPage'
+import { CategoriesPage } from '@/pages/CategoriesPage'
+import { TransactionsPage } from '@/pages/TransactionsPage'
 import { cn } from '@/lib/utils'
 
 const dot = (state: 'ok' | 'fail' | 'pending') =>
@@ -163,7 +166,7 @@ function AuthForm() {
 function AuthedView({ name, email }: { name: string; email: string }) {
   const logoutMutation = useLogout()
   return (
-    <section className="space-y-4">
+    <section className="space-y-6">
       <div className="rounded-lg border border-border p-4 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">{name}</p>
@@ -173,6 +176,9 @@ function AuthedView({ name, email }: { name: string; email: string }) {
           sair
         </Button>
       </div>
+      <TransactionsPage />
+      <AccountsPage />
+      <CategoriesPage />
       <HealthCard />
     </section>
   )
@@ -183,7 +189,7 @@ function App() {
 
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
-      <div className="max-w-md w-full space-y-6">
+      <div className="max-w-xl w-full space-y-6">
         <header className="text-center space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">finance-app</h1>
           <p className="text-sm text-muted-foreground">

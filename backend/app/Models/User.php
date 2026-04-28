@@ -45,4 +45,19 @@ class User extends Authenticatable
         'timezone' => 'America/Sao_Paulo',
         'preferences' => '{}',
     ];
+
+    public function accounts()
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
