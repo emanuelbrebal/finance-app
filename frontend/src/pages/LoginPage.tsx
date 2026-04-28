@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useLogin, useMe, useRegister } from '@/hooks/useAuth'
 import { LoginSchema, RegisterSchema } from '@/lib/validators/auth'
+import { useThemeContext } from '@/contexts/ThemeContext'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const { data: user, isLoading } = useMe()
+  const { theme, toggle } = useThemeContext()
 
   // Already authenticated — redirect into app
   useEffect(() => {
@@ -57,6 +60,13 @@ export function LoginPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+      {/* theme toggle fixed top-right */}
+      <div className="fixed top-4 right-4">
+        <Button variant="ghost" size="sm" onClick={toggle} aria-label="alternar tema">
+          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
+      </div>
+
       <div className="max-w-sm w-full space-y-6">
         <header className="text-center space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">finance-app</h1>
