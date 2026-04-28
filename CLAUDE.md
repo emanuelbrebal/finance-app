@@ -128,6 +128,7 @@ Quando precisar de detalhe, leia o arquivo correspondente em `docs/`:
 | `docs/06-importacao.md` | OFX, CSV Nubank, regras de categorização que aprendem |
 | `docs/07-wishlist.md` | 5 checkpoints, fases (MVP/v1/v2), price tracking |
 | `docs/08-roadmap.md` | MVP / v1 / v1.5 / v2 — o que entra em cada fase |
+| `docs/08b-roadmap-extras.md` | Estudo de concorrência, Landing Page, App Mobile (v3) |
 | `DESIGN.md` (raiz) | Sistema de design inspirado em Linear — paleta, tipografia, componentes, do's & don'ts. Ponto de partida pro frontend. Customizar conforme o projeto evolui (ex.: trocar accent indigo-violet por verde pra reforço positivo de marcos). |
 
 ---
@@ -140,6 +141,14 @@ Quando precisar de detalhe, leia o arquivo correspondente em `docs/`:
 4. **Code clean, sem comentários óbvios**. Comente só pontos críticos
 5. **Testes**: feature tests para endpoints, unit tests para Domain (Importers, InsightRules, Calculators). TDD não obrigatório, mas cobertura de Domain é
 6. **Commits atômicos** com mensagens descritivas em português ou inglês (consistência dentro do projeto)
+
+### Regra de tamanho dos arquivos de documentação
+
+**Máximo de 200 linhas por arquivo `docs/*.md`.**
+
+- Se ao editar um arquivo de docs ele ultrapassar 200 linhas, crie um novo arquivo para o conteúdo excedente (ex.: `docs/08b-roadmap-mobile.md`, `docs/09-concorrencia.md`)
+- Atualize o **Mapa da documentação** neste CLAUDE.md para incluir o novo arquivo
+- Anuncie ao usuário qual arquivo foi criado e por quê
 
 ---
 

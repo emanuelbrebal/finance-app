@@ -7,6 +7,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/transactions': 'movimentações',
   '/accounts': 'contas',
   '/categories': 'categorias',
+  '/profile': 'perfil',
 }
 
 export function AppShell() {
