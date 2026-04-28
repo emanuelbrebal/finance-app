@@ -128,6 +128,7 @@ Quando precisar de detalhe, leia o arquivo correspondente em `docs/`:
 | `docs/06-importacao.md` | OFX, CSV Nubank, regras de categorização que aprendem |
 | `docs/07-wishlist.md` | 5 checkpoints, fases (MVP/v1/v2), price tracking |
 | `docs/08-roadmap.md` | MVP / v1 / v1.5 / v2 — o que entra em cada fase |
+| `DESIGN.md` (raiz) | Sistema de design inspirado em Linear — paleta, tipografia, componentes, do's & don'ts. Ponto de partida pro frontend. Customizar conforme o projeto evolui (ex.: trocar accent indigo-violet por verde pra reforço positivo de marcos). |
 
 ---
 
