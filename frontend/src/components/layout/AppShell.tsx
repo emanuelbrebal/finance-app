@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
 const PAGE_TITLES: Record<string, string> = {
+  '/dashboard': 'dashboard',
   '/transactions': 'movimentações',
   '/accounts': 'contas',
   '/categories': 'categorias',

@@ -10,6 +10,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'dashboard' },
   { to: '/transactions', icon: ArrowLeftRight, label: 'movimentações' },
   { to: '/accounts', icon: Wallet, label: 'contas' },
   { to: '/categories', icon: Tag, label: 'categorias' },
