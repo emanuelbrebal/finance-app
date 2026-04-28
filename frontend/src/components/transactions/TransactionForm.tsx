@@ -52,7 +52,7 @@ export function TransactionForm({ transaction, onSuccess, onCancel }: Transactio
       description,
       amount,
       direction,
-      notes: notes || null,
+      notes: notes || undefined,
     }
 
     if (isEdit) {

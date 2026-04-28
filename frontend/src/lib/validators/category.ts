@@ -12,15 +12,14 @@ const hexColor = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'cor hex inválida (#RRGG
 
 export const CreateCategorySchema = z.object({
   name: z.string().min(1, 'obrigatório').max(60),
-  kind: z.enum(CATEGORY_KINDS, { message: 'tipo inválido' }),
+  kind: z.enum(CATEGORY_KINDS, { error: 'tipo inválido' }),
   color: hexColor,
   icon: z.string().min(1, 'obrigatório').max(40),
   is_essential: z.boolean().optional(),
-  monthly_budget: z
-    .string()
-    .regex(/^\d+(\.\d{1,2})?$/, 'use formato 1234.56')
-    .optional()
-    .or(z.literal('')),
+  monthly_budget: z.union([
+    z.literal(''),
+    z.string().regex(/^\d+(\.\d{1,2})?$/, 'use formato 1234.56'),
+  ]).optional(),
 })
 
 export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>

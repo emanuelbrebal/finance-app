@@ -17,8 +17,8 @@ export const CreateTransactionSchema = z.object({
     .string()
     .regex(/^\d+(\.\d{1,2})?$/, 'use formato 1234.56')
     .refine((v) => parseFloat(v) > 0, 'deve ser maior que zero'),
-  direction: z.enum(DIRECTIONS, { message: 'inválido' }),
-  notes: z.string().max(5000).optional().or(z.literal('')),
+  direction: z.enum(DIRECTIONS, { error: 'inválido' }),
+  notes: z.union([z.literal(''), z.string().max(5000)]).optional(),
   tags: z.array(z.string().max(50)).optional(),
   out_of_scope: z.boolean().optional(),
 })

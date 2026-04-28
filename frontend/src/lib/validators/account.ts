@@ -17,14 +17,13 @@ const hexColor = z
 
 export const CreateAccountSchema = z.object({
   name: z.string().min(1, 'obrigatório').max(100),
-  type: z.enum(ACCOUNT_TYPES, { message: 'tipo inválido' }),
-  initial_balance: z
-    .string()
-    .regex(/^\d+(\.\d{1,2})?$/, 'use formato 1234.56')
-    .optional()
-    .or(z.literal('')),
-  color: hexColor.optional().or(z.literal('')),
-  icon: z.string().max(40).optional().or(z.literal('')),
+  type: z.enum(ACCOUNT_TYPES, { error: 'tipo inválido' }),
+  initial_balance: z.union([
+    z.literal(''),
+    z.string().regex(/^\d+(\.\d{1,2})?$/, 'use formato 1234.56'),
+  ]).optional(),
+  color: z.union([z.literal(''), hexColor]).optional(),
+  icon: z.union([z.literal(''), z.string().max(40)]).optional(),
 })
 
 export type CreateAccountInput = z.infer<typeof CreateAccountSchema>
