@@ -4,35 +4,48 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAccounts } from '@/hooks/queries/useAccounts'
 import { useCategories } from '@/hooks/queries/useCategories'
-import { useCreateTransaction } from '@/hooks/queries/useTransactions'
-import { CreateTransactionSchema, DIRECTIONS, DIRECTION_LABELS, type Direction } from '@/lib/validators/transaction'
+import { useCreateTransaction, useUpdateTransaction } from '@/hooks/queries/useTransactions'
+import {
+  CreateTransactionSchema,
+  UpdateTransactionSchema,
+  DIRECTIONS,
+  DIRECTION_LABELS,
+  type Direction,
+} from '@/lib/validators/transaction'
+import type { Transaction } from '@/api/endpoints/transactions'
 
 interface TransactionFormProps {
+  /** When provided, the form runs in edit mode for this transaction */
+  transaction?: Transaction
   onSuccess?: () => void
   onCancel?: () => void
 }
 
-export function TransactionForm({ onSuccess, onCancel }: TransactionFormProps) {
+export function TransactionForm({ transaction, onSuccess, onCancel }: TransactionFormProps) {
+  const isEdit = transaction !== undefined
   const today = new Date().toISOString().slice(0, 10)
 
-  const [accountId, setAccountId] = useState<number | ''>('')
-  const [categoryId, setCategoryId] = useState<number | ''>('')
-  const [occurredOn, setOccurredOn] = useState(today)
-  const [description, setDescription] = useState('')
-  const [amount, setAmount] = useState('')
-  const [direction, setDirection] = useState<Direction>('out')
-  const [notes, setNotes] = useState('')
+  const [accountId, setAccountId] = useState<number | ''>(transaction?.account_id ?? '')
+  const [categoryId, setCategoryId] = useState<number | ''>(transaction?.category_id ?? '')
+  const [occurredOn, setOccurredOn] = useState(transaction?.occurred_on ?? today)
+  const [description, setDescription] = useState(transaction?.description ?? '')
+  const [amount, setAmount] = useState(transaction?.amount ?? '')
+  const [direction, setDirection] = useState<Direction>(transaction?.direction ?? 'out')
+  const [notes, setNotes] = useState(transaction?.notes ?? '')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const { data: accounts = [] } = useAccounts()
   const { data: categories = [] } = useCategories()
   const createMutation = useCreateTransaction()
+  const updateMutation = useUpdateTransaction(transaction?.id ?? 0)
+
+  const isPending = isEdit ? updateMutation.isPending : createMutation.isPending
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
     setErrors({})
 
-    const parsed = CreateTransactionSchema.safeParse({
+    const raw = {
       account_id: accountId === '' ? undefined : accountId,
       category_id: categoryId === '' ? null : categoryId,
       occurred_on: occurredOn,
@@ -40,26 +53,38 @@ export function TransactionForm({ onSuccess, onCancel }: TransactionFormProps) {
       amount,
       direction,
       notes: notes || null,
-    })
-
-    if (!parsed.success) {
-      setErrors(flattenZodErrors(parsed.error.issues))
-      return
     }
 
-    createMutation.mutate(parsed.data, {
-      onSuccess: ({ created }) => {
-        if (!created) {
-          setErrors({ _root: 'transação duplicada — já foi registrada antes.' })
-          return
-        }
-        setDescription('')
-        setAmount('')
-        setNotes('')
-        onSuccess?.()
-      },
-      onError: (err) => setErrors(extractServerErrors(err)),
-    })
+    if (isEdit) {
+      const parsed = UpdateTransactionSchema.safeParse(raw)
+      if (!parsed.success) {
+        setErrors(flattenZodErrors(parsed.error.issues))
+        return
+      }
+      updateMutation.mutate(parsed.data, {
+        onSuccess: () => onSuccess?.(),
+        onError: (err) => setErrors(extractServerErrors(err)),
+      })
+    } else {
+      const parsed = CreateTransactionSchema.safeParse(raw)
+      if (!parsed.success) {
+        setErrors(flattenZodErrors(parsed.error.issues))
+        return
+      }
+      createMutation.mutate(parsed.data, {
+        onSuccess: ({ created }) => {
+          if (!created) {
+            setErrors({ _root: 'transação duplicada — já foi registrada antes.' })
+            return
+          }
+          setDescription('')
+          setAmount('')
+          setNotes('')
+          onSuccess?.()
+        },
+        onError: (err) => setErrors(extractServerErrors(err)),
+      })
+    }
   }
 
   const expenseCategories = categories.filter((c) => c.kind === 'expense')
@@ -67,10 +92,10 @@ export function TransactionForm({ onSuccess, onCancel }: TransactionFormProps) {
   const filteredCategories = direction === 'out' ? expenseCategories : incomeCategories
 
   return (
-    <form onSubmit={submit} className="space-y-4 rounded-lg border border-border p-6">
-      <div className="space-y-1">
-        <h3 className="text-base font-semibold">nova movimentação</h3>
-      </div>
+    <form onSubmit={submit} className="space-y-4 rounded-lg border border-border p-5">
+      <h3 className="text-sm font-semibold">
+        {isEdit ? 'editar movimentação' : 'nova movimentação'}
+      </h3>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
@@ -156,8 +181,8 @@ export function TransactionForm({ onSuccess, onCancel }: TransactionFormProps) {
       {errors._root && <p className="text-xs text-destructive">{errors._root}</p>}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={createMutation.isPending} className="flex-1">
-          {createMutation.isPending ? 'salvando...' : 'registrar'}
+        <Button type="submit" disabled={isPending} className="flex-1">
+          {isPending ? 'salvando...' : isEdit ? 'salvar alterações' : 'registrar'}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>cancelar</Button>
@@ -166,6 +191,8 @@ export function TransactionForm({ onSuccess, onCancel }: TransactionFormProps) {
     </form>
   )
 }
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function flattenZodErrors(issues: { path: PropertyKey[]; message: string }[]): Record<string, string> {
   return issues.reduce<Record<string, string>>((acc, issue) => {
@@ -182,7 +209,9 @@ function extractServerErrors(err: unknown): Record<string, string> {
   ) {
     const data = (err as { response: { data: { message?: string; errors?: Record<string, string[]> } } }).response.data
     if (data.errors) {
-      return Object.fromEntries(Object.entries(data.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : String(v)]))
+      return Object.fromEntries(
+        Object.entries(data.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : String(v)]),
+      )
     }
     if (data.message) return { _root: data.message }
   }
