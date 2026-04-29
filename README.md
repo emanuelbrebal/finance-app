@@ -32,57 +32,73 @@ App de finanças pessoais que:
 
 ```bash
 # 1. Clone o repo
-git clone <url> finance-app
+git clone https://github.com/emanuelbrebal/finance-app
 cd finance-app
 
-# 2. Leia a documentação (importante!)
-cat CLAUDE.md
-ls docs/
-
-# 3. (Quando o código existir)
+# 2. Copie o .env e suba os containers
+cp backend/.env.example backend/.env
 docker compose up -d
+
+# 3. Instale dependências, gere a key e rode as migrations
+docker compose exec laravel composer install
+docker compose exec laravel php artisan key:generate
+docker compose exec laravel php artisan migrate
+
+# 4. Instale o frontend e suba o dev server
+cd frontend && npm install && npm run dev
 ```
+
+Acesse em `http://localhost:5173` — crie sua conta na tela de cadastro.
 
 ## Estrutura
 
 ```
 finance-app/
 ├── CLAUDE.md           # contexto permanente (lido pelo Claude Code automaticamente)
-├── README.md           # este arquivo
-├── docs/               # spec completa do projeto
+├── DESIGN.md           # sistema de design: paleta, tipografia, componentes
+├── docs/               # spec e arquitetura do projeto
 │   ├── 00-visao-geral.md
 │   ├── 01-arquitetura.md
 │   ├── 02-schema.md
 │   ├── 03-endpoints.md
-│   ├── 04-estrutura-pastas.md
+│   ├── 04-estrutura-pastas.md   # mapa atualizado do código real
 │   ├── 05-gamificacao.md
 │   ├── 06-importacao.md
 │   ├── 07-wishlist.md
 │   └── 08-roadmap.md
-├── backend/            # (a criar) Laravel API
-└── frontend/           # (a criar) React SPA
+├── backend/            # Laravel 11 API (PHP 8.3 + PostgreSQL + Redis)
+└── frontend/           # React 18 SPA (TypeScript + Vite + TailwindCSS)
 ```
 
 ## Trabalhando com Claude Code
 
-Este projeto foi desenhado pra ser implementado em parceria com Claude Code. O arquivo `CLAUDE.md` é lido automaticamente em toda conversa e contém princípios e padrões que devem ser seguidos.
-
-Para tarefas específicas, peça ao Claude Code para ler o doc relevante:
+O arquivo `CLAUDE.md` é lido automaticamente em toda conversa e contém princípios, padrões e o mapa de documentação. Para tarefas específicas, instrua o Claude Code a ler o doc relevante antes de codar:
 
 ```
-Leia docs/02-schema.md e docs/04-estrutura-pastas.md.
-Em seguida, crie as migrations das tabelas de transactions, accounts e categories.
+Leia docs/02-schema.md e docs/05-gamificacao.md.
+Implemente os marcos de patrimônio da Fatia X.
 ```
 
-## Status
+## Status do MVP
 
-Documentação ✅ | Código backend ⏳ | Código frontend ⏳
+| Módulo | Backend | Frontend |
+|---|---|---|
+| Auth (login / cadastro) | ✅ | ✅ |
+| Contas | ✅ | ✅ |
+| Categorias | ✅ | ✅ |
+| Transações + filtros | ✅ | ✅ |
+| Dashboard (KPIs + gráfico) | ✅ | ✅ |
+| Perfil | ✅ | ✅ |
+| Importação OFX/CSV | ⏳ v1 | ⏳ v1 |
+| Wishlist + checkpoints | ⏳ v1 | ⏳ v1 |
+| Gamificação / marcos | ⏳ v1 | ⏳ v1 |
+| Insights automáticos | ⏳ v1 | ⏳ v1 |
 
-## Roadmap resumido
+## Roadmap
 
-- **MVP** (~1 semana): Auth + transações manuais + categorias + dashboard básico + importação CSV/OFX
-- **v1** (~1 mês): Wishlist + gamificação + insights + notificações + snapshots + recorrentes
-- **v1.5**: Modo co-piloto + busca de preços sob demanda (SerpAPI)
-- **v2**: Modo desafio + monitoramento contínuo de preços + integrações Open Finance
+- **MVP** ✅ — Auth + CRUD completo + dashboard + filtros + perfil
+- **v1** — Wishlist, gamificação, insights, importação OFX/CSV, notificações
+- **v1.5** — Modo co-piloto, busca de preços (SerpAPI)
+- **v2** — Modo desafio, Open Finance, monitoramento contínuo de preços
 
 Detalhes em `docs/08-roadmap.md`.
