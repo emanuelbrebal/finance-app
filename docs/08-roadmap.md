@@ -167,6 +167,10 @@ Você consegue:
 
 ---
 
+> 📄 Planos de concorrência, landing page e app mobile estão em [`docs/08b-roadmap-extras.md`](08b-roadmap-extras.md)
+
+---
+
 ## Fora de roadmap (decisões conscientes)
 
 Itens que parecem boas ideias mas que decidimos NÃO implementar:
