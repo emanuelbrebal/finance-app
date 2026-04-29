@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\CategorizationRuleController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\GoalController;
 use App\Http\Controllers\Api\V1\ImportController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\RecurringTransactionController;
@@ -69,4 +70,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Recurring transactions
     Route::post('/recurring-transactions/{recurringTransaction}/generate-now', [RecurringTransactionController::class, 'generateNow']);
     Route::apiResource('recurring-transactions', RecurringTransactionController::class)->except(['show']);
+
+    // Goals (emergency-fund routes must come before {goal} param to avoid collision)
+    Route::get('/goals/emergency-fund', [GoalController::class, 'emergencyFund']);
+    Route::post('/goals/emergency-fund/auto-target', [GoalController::class, 'autoTargetEmergencyFund']);
+    Route::post('/goals/{goal}/deposit', [GoalController::class, 'deposit']);
+    Route::apiResource('goals', GoalController::class);
 });

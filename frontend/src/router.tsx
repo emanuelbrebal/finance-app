@@ -13,6 +13,7 @@ import ImportUploadPage from '@/pages/ImportUploadPage'
 import ImportPreviewPage from '@/pages/ImportPreviewPage'
 import CategorizationRulesPage from '@/pages/CategorizationRulesPage'
 import RecurringTransactionsPage from '@/pages/RecurringTransactionsPage'
+import GoalsPage from '@/pages/GoalsPage'
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
           { path: 'imports/:id/preview', element: <ImportPreviewPage /> },
           { path: 'categorization-rules', element: <CategorizationRulesPage /> },
           { path: 'recurring', element: <RecurringTransactionsPage /> },
+          { path: 'goals', element: <GoalsPage /> },
         ],
       },
     ],
