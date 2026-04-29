@@ -1,6 +1,7 @@
 import { TrendingUp, Flame, Layers, PiggyBank, CalendarDays } from 'lucide-react'
 import { Money } from '@/components/Money'
 import { MonthlyChart } from '@/components/charts/MonthlyChart'
+import { NetWorthEvolutionChart } from '@/components/charts/NetWorthEvolutionChart'
 import { EmergencyFundWidget } from '@/components/EmergencyFundWidget'
 import { useDashboard } from '@/hooks/queries/useDashboard'
 import { cn } from '@/lib/utils'
@@ -245,6 +246,7 @@ export function DashboardPage() {
         <div className="col-span-2">
           <EmergencyFundWidget />
         </div>
+        <NetWorthEvolutionChart />
         <MonthlyChart />
         <RecentTransactions transactions={data.recent_transactions} />
       </div>

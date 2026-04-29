@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\CaptureNetWorthSnapshotJob;
 use App\Jobs\GenerateRecurringTransactionsJob;
 use App\Jobs\PromoteWishlistItemsJob;
 use Illuminate\Foundation\Inspiring;
@@ -21,5 +22,12 @@ Schedule::job(new GenerateRecurringTransactionsJob())
 Schedule::job(new PromoteWishlistItemsJob())
     ->dailyAt('07:00')
     ->name('promote-wishlist-items')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// Capture net-worth snapshot on the last day of each month at 23:30
+Schedule::job(new CaptureNetWorthSnapshotJob())
+    ->lastDayOfMonth('23:30')
+    ->name('capture-net-worth-snapshot')
     ->withoutOverlapping()
     ->onOneServer();

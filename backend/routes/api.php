@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\CategorizationRuleController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\ChartController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\GoalController;
@@ -77,6 +78,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/goals/emergency-fund/auto-target', [GoalController::class, 'autoTargetEmergencyFund']);
     Route::post('/goals/{goal}/deposit', [GoalController::class, 'deposit']);
     Route::apiResource('goals', GoalController::class);
+
+    // Charts
+    Route::get('/charts/net-worth-evolution', [ChartController::class, 'netWorthEvolution']);
+    Route::get('/charts/income-vs-expenses', [ChartController::class, 'incomeVsExpenses']);
+    Route::get('/charts/category-distribution', [ChartController::class, 'categoryDistribution']);
+    Route::get('/charts/day-of-week-heatmap', [ChartController::class, 'dayOfWeekHeatmap']);
 
     // Wishlist (summary route must come before {wishlist} param)
     Route::get('/wishlist/summary', [WishlistController::class, 'summary']);
