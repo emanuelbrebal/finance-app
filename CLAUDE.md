@@ -129,6 +129,15 @@ Quando precisar de detalhe, leia o arquivo correspondente em `docs/`:
 | `docs/07-wishlist.md` | 5 checkpoints, fases (MVP/v1/v2), price tracking |
 | `docs/08-roadmap.md` | MVP / v1 / v1.5 / v2 — o que entra em cada fase |
 | `docs/08b-roadmap-extras.md` | Estudo de concorrência, Landing Page, App Mobile (v3) |
+| `docs/09-concorrencia.md` | Análise de concorrentes (Pierre, Organizze, Mobills, Minhas Economias) |
+| `docs/10-landing-page.md` | Estratégia e copy da landing page de pré-lançamento |
+| `docs/11-app-mobile.md` | Plano de app mobile (v3) — React Native / PWA |
+| `docs/12-precificacao.md` | Modelo de negócio — Plano Livre (R$0) + Navegador (R$14,90/mês) |
+| `docs/13-divulgacao.md` | Estratégia de aquisição e marketing por fase |
+| `docs/14-validacao.md` | Estratégia de validação de produto — formulário + distribuição |
+| `docs/14b-formulario.md` | Formulário de validação pronto (Tally/Google Forms) |
+| `docs/15-linkedin.md` | Estratégia de LinkedIn como canal de aquisição + portfólio |
+| `docs/15b-calendario-linkedin.md` | Calendário de posts e templates prontos para LinkedIn |
 | `DESIGN.md` (raiz) | Sistema de design inspirado em Linear — paleta, tipografia, componentes, do's & don'ts. Ponto de partida pro frontend. Customizar conforme o projeto evolui (ex.: trocar accent indigo-violet por verde pra reforço positivo de marcos). |
 
 ---

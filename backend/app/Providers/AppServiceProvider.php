@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domain\Categorization\CategorizationRuleApplier;
+use App\Domain\Importers\ImporterRegistry;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
@@ -15,7 +17,15 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->singleton(ImporterRegistry::class, function ($app) {
+            $importers = array_map(
+                fn (string $cls) => $app->make($cls),
+                config('importers.importers', []),
+            );
+            return new ImporterRegistry($importers);
+        });
+
+        $this->app->singleton(CategorizationRuleApplier::class);
     }
 
     public function boot(): void

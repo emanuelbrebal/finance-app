@@ -27,6 +27,8 @@ class Transaction extends Model
         'tags',
         'out_of_scope',
         'dedup_hash',
+        'import_batch_id',
+        'recurring_transaction_id',
     ];
 
     protected function casts(): array
@@ -57,6 +59,16 @@ class Transaction extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function importBatch(): BelongsTo
+    {
+        return $this->belongsTo(ImportBatch::class);
+    }
+
+    public function recurringTransaction(): BelongsTo
+    {
+        return $this->belongsTo(RecurringTransaction::class);
     }
 
     /**

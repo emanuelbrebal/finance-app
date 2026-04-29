@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\ImportController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -50,4 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions/summary', [TransactionController::class, 'summary']);
     Route::post('/transactions/bulk-categorize', [TransactionController::class, 'bulkCategorize']);
     Route::apiResource('transactions', TransactionController::class);
+
+    // Imports
+    Route::get('/imports', [ImportController::class, 'index']);
+    Route::post('/imports', [ImportController::class, 'store']);
+    Route::get('/imports/{import}', [ImportController::class, 'show']);
+    Route::get('/imports/{import}/preview', [ImportController::class, 'preview']);
+    Route::post('/imports/{import}/confirm', [ImportController::class, 'confirm']);
+    Route::post('/imports/{import}/revert', [ImportController::class, 'revert']);
 });

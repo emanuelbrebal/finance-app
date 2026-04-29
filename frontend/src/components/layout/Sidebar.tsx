@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, ArrowLeftRight, Wallet, Tag, UserCircle } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, Wallet, Tag, UserCircle, Upload } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useHealth } from '@/hooks/queries/useHealth'
 
@@ -12,6 +12,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'dashboard' },
   { to: '/transactions', icon: ArrowLeftRight, label: 'movimentações' },
+  { to: '/imports', icon: Upload, label: 'importar' },
   { to: '/accounts', icon: Wallet, label: 'contas' },
   { to: '/categories', icon: Tag, label: 'categorias' },
 ]
