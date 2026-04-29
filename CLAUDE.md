@@ -140,7 +140,18 @@ Quando precisar de detalhe, leia o arquivo correspondente em `docs/`:
 3. **Respeite os princípios** acima — eles foram travados de propósito após várias rodadas de discussão. Se algo parece "bom mas conflita", levante a questão antes de fazer
 4. **Code clean, sem comentários óbvios**. Comente só pontos críticos
 5. **Testes**: feature tests para endpoints, unit tests para Domain (Importers, InsightRules, Calculators). TDD não obrigatório, mas cobertura de Domain é
-6. **Commits atômicos** com mensagens descritivas em português ou inglês (consistência dentro do projeto)
+6. **Commits atômicos** com mensagens descritivas **em inglês** — portfólio público, inglês é padrão
+
+### Regra de idioma para Pull Requests
+
+**PRs sempre em inglês** — título e corpo, sem exceção.
+
+Este projeto é portfólio para o mercado internacional. Todo Pull Request deve:
+- Ter **título em inglês** seguindo o padrão `type: short description`
+- Ter **corpo em inglês**: Summary, What changed, How to test
+- Usar termos técnicos corretos (não traduzir "endpoint", "middleware", "hook", etc.)
+
+O que **não muda**: UI do app continua em português (produto para usuários BR), variáveis e comentários no código continuam flexíveis.
 
 ### Regra de tamanho dos arquivos de documentação
 
@@ -154,6 +165,5 @@ Quando precisar de detalhe, leia o arquivo correspondente em `docs/`:
 
 ## Status atual
 
-- ✅ Spec completa (Fatias 1 e 2 da documentação)
-- ⏳ Próximo passo: **Fatia 3a** — `docker-compose.yml` + setup inicial de Laravel + React rodando
-- ⏳ Depois: migrations, models, primeiros controllers, primeira tela
+- ✅ MVP completo (Fatias 3a–3o): Auth + Accounts + Categories + Transactions + Dashboard + Profile
+- ⏳ Próximo passo: **v1** — Importação OFX/CSV, Wishlist, Gamificação, Insights, Notificações
