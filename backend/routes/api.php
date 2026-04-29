@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ImportController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\RecurringTransactionController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -64,4 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Categorization rules
     Route::post('/categorization-rules/{categorizationRule}/apply-to-existing', [CategorizationRuleController::class, 'applyToExisting']);
     Route::apiResource('categorization-rules', CategorizationRuleController::class)->except(['show']);
+
+    // Recurring transactions
+    Route::post('/recurring-transactions/{recurringTransaction}/generate-now', [RecurringTransactionController::class, 'generateNow']);
+    Route::apiResource('recurring-transactions', RecurringTransactionController::class)->except(['show']);
 });
