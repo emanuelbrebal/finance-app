@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Domain\Categorization\CategorizationRuleApplier;
 use App\Domain\Importers\ImporterRegistry;
+use App\Domain\Wishlist\CheckpointEvaluator;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Transaction;
@@ -26,6 +27,14 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(CategorizationRuleApplier::class);
+
+        $this->app->singleton(CheckpointEvaluator::class, function ($app) {
+            $checkpoints = array_map(
+                fn (string $cls) => $app->make($cls),
+                config('wishlist.checkpoints', []),
+            );
+            return new CheckpointEvaluator($checkpoints);
+        });
     }
 
     public function boot(): void

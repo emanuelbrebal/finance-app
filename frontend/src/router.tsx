@@ -14,6 +14,8 @@ import ImportPreviewPage from '@/pages/ImportPreviewPage'
 import CategorizationRulesPage from '@/pages/CategorizationRulesPage'
 import RecurringTransactionsPage from '@/pages/RecurringTransactionsPage'
 import GoalsPage from '@/pages/GoalsPage'
+import WishlistPage from '@/pages/WishlistPage'
+import WishlistItemPage from '@/pages/WishlistItemPage'
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +44,8 @@ export const router = createBrowserRouter([
           { path: 'categorization-rules', element: <CategorizationRulesPage /> },
           { path: 'recurring', element: <RecurringTransactionsPage /> },
           { path: 'goals', element: <GoalsPage /> },
+          { path: 'wishlist', element: <WishlistPage /> },
+          { path: 'wishlist/:id', element: <WishlistItemPage /> },
         ],
       },
     ],

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\GoalController;
 use App\Http\Controllers\Api\V1\ImportController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\RecurringTransactionController;
+use App\Http\Controllers\Api\V1\WishlistController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -76,4 +77,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/goals/emergency-fund/auto-target', [GoalController::class, 'autoTargetEmergencyFund']);
     Route::post('/goals/{goal}/deposit', [GoalController::class, 'deposit']);
     Route::apiResource('goals', GoalController::class);
+
+    // Wishlist (summary route must come before {wishlist} param)
+    Route::get('/wishlist/summary', [WishlistController::class, 'summary']);
+    Route::post('/wishlist/{wishlist}/extend-quarantine', [WishlistController::class, 'extendQuarantine']);
+    Route::post('/wishlist/{wishlist}/abandon', [WishlistController::class, 'abandon']);
+    Route::post('/wishlist/{wishlist}/purchase', [WishlistController::class, 'purchase']);
+    Route::post('/wishlist/{wishlist}/check-prices', [WishlistController::class, 'checkPrices']);
+    Route::apiResource('wishlist', WishlistController::class)->parameters(['wishlist' => 'wishlist']);
 });
