@@ -11,6 +11,7 @@ import { ProfilePage } from '@/pages/ProfilePage'
 import ImportsPage from '@/pages/ImportsPage'
 import ImportUploadPage from '@/pages/ImportUploadPage'
 import ImportPreviewPage from '@/pages/ImportPreviewPage'
+import CategorizationRulesPage from '@/pages/CategorizationRulesPage'
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
           { path: 'imports', element: <ImportsPage /> },
           { path: 'imports/upload', element: <ImportUploadPage /> },
           { path: 'imports/:id/preview', element: <ImportPreviewPage /> },
+          { path: 'categorization-rules', element: <CategorizationRulesPage /> },
         ],
       },
     ],

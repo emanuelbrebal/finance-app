@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AccountController;
+use App\Http\Controllers\Api\V1\CategorizationRuleController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\DashboardController;
@@ -59,4 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/imports/{import}/preview', [ImportController::class, 'preview']);
     Route::post('/imports/{import}/confirm', [ImportController::class, 'confirm']);
     Route::post('/imports/{import}/revert', [ImportController::class, 'revert']);
+
+    // Categorization rules
+    Route::post('/categorization-rules/{categorizationRule}/apply-to-existing', [CategorizationRuleController::class, 'applyToExisting']);
+    Route::apiResource('categorization-rules', CategorizationRuleController::class)->except(['show']);
 });

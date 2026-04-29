@@ -195,12 +195,35 @@ class TransactionController extends Controller
                 'integer',
                 Rule::exists('categories', 'id')->where('user_id', $request->user()->id),
             ],
+            'create_rule' => 'sometimes|boolean',
+            'rule_pattern' => 'required_if:create_rule,true|nullable|string|max:255',
         ]);
+
+        $userId = $request->user()->id;
+        $categoryId = $request->input('category_id');
 
         $updated = $request->user()->transactions()
             ->whereIn('id', $request->input('ids'))
-            ->update(['category_id' => $request->input('category_id')]);
+            ->update(['category_id' => $categoryId]);
 
-        return response()->json(['data' => ['updated' => $updated]]);
+        $ruleId = null;
+        if ($request->boolean('create_rule')) {
+            $rule = \App\Models\CategorizationRule::firstOrCreate(
+                [
+                    'user_id' => $userId,
+                    'pattern' => $request->input('rule_pattern'),
+                    'match_type' => 'contains',
+                ],
+                [
+                    'category_id' => $categoryId,
+                    'priority' => 0,
+                    'auto_learned' => true,
+                    'hits' => $updated,
+                ],
+            );
+            $ruleId = $rule->id;
+        }
+
+        return response()->json(['data' => ['updated' => $updated, 'rule_id' => $ruleId]]);
     }
 }
