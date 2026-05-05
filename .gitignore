@@ -52,6 +52,7 @@ frontend/coverage/
 # Docker
 .docker/
 docker-compose.override.yml
+.env.docker
 
 # Logs
 *.log
