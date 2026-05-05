@@ -32,8 +32,12 @@ apiClient.interceptors.response.use(
     const status = error.response?.status
 
     if (status === 401) {
-      queryClient.clear()
-      window.location.href = '/login'
+      // Skip /auth/me — AuthGuard's useMe handles 401 by returning null,
+      // then redirects via React Router. Intercepting here causes an infinite loop.
+      if (error.config?.url !== '/auth/me') {
+        queryClient.clear()
+        window.location.href = '/login'
+      }
       return Promise.reject(error)
     }
 
