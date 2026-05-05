@@ -4,7 +4,6 @@ import { Plus, Trash2, Loader2, ShoppingCart, Sparkles, ExternalLink } from 'luc
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -21,6 +20,7 @@ import {
 } from '@/hooks/queries/useWishlist'
 import { useCategories } from '@/hooks/queries/useCategories'
 import type { WishlistItem, WishlistStatus } from '@/api/endpoints/wishlist'
+import { Badge } from '@/components/ui/badge'
 
 const STATUS_LABELS: Record<WishlistStatus, string> = {
   waiting: 'aguardando',
