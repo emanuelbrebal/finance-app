@@ -15,21 +15,7 @@ class Transaction extends Model
 
     public const DIRECTION_OUT = 'out';
 
-    protected $fillable = [
-        'user_id',
-        'account_id',
-        'category_id',
-        'occurred_on',
-        'description',
-        'amount',
-        'direction',
-        'notes',
-        'tags',
-        'out_of_scope',
-        'dedup_hash',
-        'import_batch_id',
-        'recurring_transaction_id',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {
