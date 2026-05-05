@@ -55,6 +55,46 @@ services:
     networks:
       - finance-app
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: finance-worker
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    environment:
+      TZ: America/Sao_Paulo
+    volumes:
+      - ./backend:/var/www/html
+      - vendor:/var/www/html/vendor
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - finance-app
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: finance-scheduler
+    command: ["php", "artisan", "schedule:work"]
+    environment:
+      TZ: America/Sao_Paulo
+    volumes:
+      - ./backend:/var/www/html
+      - vendor:/var/www/html/vendor
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - finance-app
+    restart: unless-stopped
+
   vite:
     image: node:20-alpine
     container_name: finance-vite
