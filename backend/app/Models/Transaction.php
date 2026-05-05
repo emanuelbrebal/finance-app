@@ -15,7 +15,7 @@ class Transaction extends Model
 
     public const DIRECTION_OUT = 'out';
 
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'user_id'];
 
     protected function casts(): array
     {

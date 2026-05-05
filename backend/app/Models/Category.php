@@ -14,7 +14,7 @@ class Category extends Model
 
     public const KIND_EXPENSE = 'expense';
 
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'user_id'];
 
     protected function casts(): array
     {
