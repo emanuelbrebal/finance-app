@@ -13,9 +13,9 @@ class BurnRateCalculator
      */
     public function lastMonths(User $user, int $months = 3): array
     {
-        // Start of N months ago, end of last month
-        $start = now()->subMonths($months)->startOfMonth()->toDateString();
-        $end   = now()->subMonth()->endOfMonth()->toDateString();
+        $tz    = $user->timezone;
+        $start = now($tz)->subMonths($months)->startOfMonth()->toDateString();
+        $end   = now($tz)->subMonth()->endOfMonth()->toDateString();
 
         $rows = DB::table('transactions')
             ->where('user_id', $user->id)
@@ -37,11 +37,14 @@ class BurnRateCalculator
             ];
         }
 
-        $totalExpenses = $rows->sum(fn ($r) => (float) $r->total);
-        $monthCount    = $rows->count();
+        $totalExpenses = $rows->reduce(
+            fn ($carry, $r) => bcadd($carry, (string) $r->total, 2),
+            '0.00'
+        );
+        $monthCount = $rows->count();
 
         return [
-            'burn_rate'      => number_format($totalExpenses / $monthCount, 2, '.', ''),
+            'burn_rate'      => bcdiv($totalExpenses, (string) $monthCount, 2),
             'months_sampled' => $monthCount,
         ];
     }
