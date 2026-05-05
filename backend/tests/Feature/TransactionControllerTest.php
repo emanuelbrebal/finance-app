@@ -218,6 +218,26 @@ class TransactionControllerTest extends TestCase
         }
     }
 
+    public function test_bulk_categorize_cannot_touch_other_users_transactions(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        $account = Account::factory()->for($user)->create();
+        $otherAccount = Account::factory()->for($other)->create();
+        $category = Category::factory()->for($user)->create();
+        $otherTransactions = Transaction::factory()->count(2)->for($other)->for($otherAccount)->create();
+
+        $response = $this->actingAs($user)->postJson('/api/v1/transactions/bulk-categorize', [
+            'ids' => $otherTransactions->pluck('id')->all(),
+            'category_id' => $category->id,
+        ]);
+
+        $response->assertOk()->assertJsonPath('data.updated', 0);
+        foreach ($otherTransactions as $tx) {
+            $this->assertNull($tx->fresh()->category_id);
+        }
+    }
+
     public function test_summary_by_month(): void
     {
         $user = User::factory()->create();

@@ -14,16 +14,7 @@ class Category extends Model
 
     public const KIND_EXPENSE = 'expense';
 
-    protected $fillable = [
-        'user_id',
-        'name',
-        'kind',
-        'color',
-        'icon',
-        'is_essential',
-        'monthly_budget',
-        'archived_at',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {

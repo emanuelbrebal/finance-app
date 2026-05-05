@@ -8,6 +8,14 @@ import { TransactionsPage } from '@/pages/TransactionsPage'
 import { AccountsPage } from '@/pages/AccountsPage'
 import { CategoriesPage } from '@/pages/CategoriesPage'
 import { ProfilePage } from '@/pages/ProfilePage'
+import ImportsPage from '@/pages/ImportsPage'
+import ImportUploadPage from '@/pages/ImportUploadPage'
+import ImportPreviewPage from '@/pages/ImportPreviewPage'
+import CategorizationRulesPage from '@/pages/CategorizationRulesPage'
+import RecurringTransactionsPage from '@/pages/RecurringTransactionsPage'
+import GoalsPage from '@/pages/GoalsPage'
+import WishlistPage from '@/pages/WishlistPage'
+import WishlistItemPage from '@/pages/WishlistItemPage'
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +38,14 @@ export const router = createBrowserRouter([
           { path: 'accounts', element: <AccountsPage /> },
           { path: 'categories', element: <CategoriesPage /> },
           { path: 'profile', element: <ProfilePage /> },
+          { path: 'imports', element: <ImportsPage /> },
+          { path: 'imports/upload', element: <ImportUploadPage /> },
+          { path: 'imports/:id/preview', element: <ImportPreviewPage /> },
+          { path: 'categorization-rules', element: <CategorizationRulesPage /> },
+          { path: 'recurring', element: <RecurringTransactionsPage /> },
+          { path: 'goals', element: <GoalsPage /> },
+          { path: 'wishlist', element: <WishlistPage /> },
+          { path: 'wishlist/:id', element: <WishlistItemPage /> },
         ],
       },
     ],

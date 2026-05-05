@@ -2,10 +2,16 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AccountController;
+use App\Http\Controllers\Api\V1\CategorizationRuleController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\ChartController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\GoalController;
+use App\Http\Controllers\Api\V1\ImportController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\RecurringTransactionController;
+use App\Http\Controllers\Api\V1\WishlistController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -36,7 +42,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::patch('/profile', [ProfileController::class, 'update']);
 
@@ -50,4 +56,40 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions/summary', [TransactionController::class, 'summary']);
     Route::post('/transactions/bulk-categorize', [TransactionController::class, 'bulkCategorize']);
     Route::apiResource('transactions', TransactionController::class);
+
+    // Imports
+    Route::get('/imports', [ImportController::class, 'index']);
+    Route::post('/imports', [ImportController::class, 'store']);
+    Route::get('/imports/{import}', [ImportController::class, 'show']);
+    Route::get('/imports/{import}/preview', [ImportController::class, 'preview']);
+    Route::post('/imports/{import}/confirm', [ImportController::class, 'confirm']);
+    Route::post('/imports/{import}/revert', [ImportController::class, 'revert']);
+
+    // Categorization rules
+    Route::post('/categorization-rules/{categorizationRule}/apply-to-existing', [CategorizationRuleController::class, 'applyToExisting']);
+    Route::apiResource('categorization-rules', CategorizationRuleController::class)->except(['show']);
+
+    // Recurring transactions
+    Route::post('/recurring-transactions/{recurringTransaction}/generate-now', [RecurringTransactionController::class, 'generateNow']);
+    Route::apiResource('recurring-transactions', RecurringTransactionController::class)->except(['show']);
+
+    // Goals (emergency-fund routes must come before {goal} param to avoid collision)
+    Route::get('/goals/emergency-fund', [GoalController::class, 'emergencyFund']);
+    Route::post('/goals/emergency-fund/auto-target', [GoalController::class, 'autoTargetEmergencyFund']);
+    Route::post('/goals/{goal}/deposit', [GoalController::class, 'deposit']);
+    Route::apiResource('goals', GoalController::class);
+
+    // Charts
+    Route::get('/charts/net-worth-evolution', [ChartController::class, 'netWorthEvolution']);
+    Route::get('/charts/income-vs-expenses', [ChartController::class, 'incomeVsExpenses']);
+    Route::get('/charts/category-distribution', [ChartController::class, 'categoryDistribution']);
+    Route::get('/charts/day-of-week-heatmap', [ChartController::class, 'dayOfWeekHeatmap']);
+
+    // Wishlist (summary route must come before {wishlist} param)
+    Route::get('/wishlist/summary', [WishlistController::class, 'summary']);
+    Route::post('/wishlist/{wishlist}/extend-quarantine', [WishlistController::class, 'extendQuarantine']);
+    Route::post('/wishlist/{wishlist}/abandon', [WishlistController::class, 'abandon']);
+    Route::post('/wishlist/{wishlist}/purchase', [WishlistController::class, 'purchase']);
+    Route::post('/wishlist/{wishlist}/check-prices', [WishlistController::class, 'checkPrices']);
+    Route::apiResource('wishlist', WishlistController::class)->parameters(['wishlist' => 'wishlist']);
 });

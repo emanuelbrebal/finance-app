@@ -15,19 +15,7 @@ class Transaction extends Model
 
     public const DIRECTION_OUT = 'out';
 
-    protected $fillable = [
-        'user_id',
-        'account_id',
-        'category_id',
-        'occurred_on',
-        'description',
-        'amount',
-        'direction',
-        'notes',
-        'tags',
-        'out_of_scope',
-        'dedup_hash',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {
@@ -57,6 +45,16 @@ class Transaction extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function importBatch(): BelongsTo
+    {
+        return $this->belongsTo(ImportBatch::class);
+    }
+
+    public function recurringTransaction(): BelongsTo
+    {
+        return $this->belongsTo(RecurringTransaction::class);
     }
 
     /**
