@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { queryClient } from '@/lib/queryClient'
 
 export const apiClient = axios.create({
   baseURL: '/api/v1',
@@ -24,3 +25,29 @@ apiClient.interceptors.request.use(async (config) => {
   }
   return config
 })
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error.response?.status
+
+    if (status === 401) {
+      // Skip /auth/me — AuthGuard's useMe handles 401 by returning null,
+      // then redirects via React Router. Intercepting here causes an infinite loop.
+      if (error.config?.url !== '/auth/me') {
+        queryClient.clear()
+        window.location.href = '/login'
+      }
+      return Promise.reject(error)
+    }
+
+    // 419 = CSRF token mismatch — reset and retry once
+    if (status === 419) {
+      csrfFetched = false
+      await ensureCsrfCookie()
+      return apiClient.request(error.config)
+    }
+
+    return Promise.reject(error)
+  },
+)

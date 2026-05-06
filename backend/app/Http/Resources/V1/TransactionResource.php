@@ -20,6 +20,17 @@ class TransactionResource extends JsonResource
             'notes' => $this->notes,
             'tags' => $this->tags ?? [],
             'out_of_scope' => $this->out_of_scope,
+            'account' => $this->whenLoaded('account', fn () => [
+                'id'    => $this->account->id,
+                'name'  => $this->account->name,
+                'color' => $this->account->color,
+            ]),
+            'category' => $this->whenLoaded('category', fn () => [
+                'id'    => $this->category->id,
+                'name'  => $this->category->name,
+                'color' => $this->category->color,
+                'icon'  => $this->category->icon ?? null,
+            ]),
             'import_batch_id' => $this->import_batch_id,
             'recurring_transaction_id' => $this->recurring_transaction_id,
             'created_at' => $this->created_at->toIso8601String(),

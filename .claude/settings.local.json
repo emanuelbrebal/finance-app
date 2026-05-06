@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh pr create --base main --title '✨ feat\\(mobile\\): add mental health and oncology screens content' --body ' *)",
+      "Bash(gh pr edit 31 --title '✨ feat\\(mobile\\): add mental health and oncology screens content' --body ' *)",
+      "Bash(npm run *)",
+      "Bash(npx expo *)",
+      "Bash(npx --prefix apps/mobile expo lint)",
+      "Bash(gh pr create --base main --title '✨ feat\\(personal-area\\): add About screen and notifications LGPD module' --body ' *)",
+      "Bash(xargs cat *)",
+      "Bash(xargs grep *)",
+      "Bash(xargs ls *)",
+      "Bash(npx prisma *)",
+      "Bash(DATABASE_URL=\"postgresql://postgres:Em4nu3l!@%23@localhost:5432/oncomente?schema=public\" npx prisma migrate dev --name add_treatments_table)",
+      "Bash(node -e ' *)",
+      "Bash(../../node_modules/.bin/tsx node_modules/.bin/prisma generate)",
+      "Bash(npx skills *)",
+      "Bash(py --version)",
+      "Bash(where python3 *)",
+      "Bash(where py *)",
+      "Bash(python *)"
+    ]
+  }
+}

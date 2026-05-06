@@ -16,7 +16,7 @@ class SavingsRateCalculator
     public function forMonth(User $user, string $month): array
     {
         $start = $month.'-01';
-        $end   = date('Y-m-t', strtotime($start)); // last day of month
+        $end   = date('Y-m-t', strtotime($start));
 
         $rows = DB::table('transactions')
             ->where('user_id', $user->id)
@@ -31,16 +31,16 @@ class SavingsRateCalculator
             ->get()
             ->keyBy('direction');
 
-        $income   = (float) ($rows->get('in')?->total  ?? 0);
-        $expenses = (float) ($rows->get('out')?->total ?? 0);
-        $saved    = $income - $expenses;
+        $income   = (string) ($rows->get('in')?->total  ?? '0.00');
+        $expenses = (string) ($rows->get('out')?->total ?? '0.00');
+        $saved    = bcsub($income, $expenses, 2);
 
         return [
-            'income'       => number_format($income, 2, '.', ''),
-            'expenses'     => number_format($expenses, 2, '.', ''),
-            'saved'        => number_format($saved, 2, '.', ''),
-            'savings_rate' => $income > 0
-                ? round($saved / $income * 100, 1)
+            'income'       => $income,
+            'expenses'     => $expenses,
+            'saved'        => $saved,
+            'savings_rate' => bccomp($income, '0', 2) > 0
+                ? round((float) bcdiv(bcmul($saved, '100', 4), $income, 4), 1)
                 : null,
         ];
     }
